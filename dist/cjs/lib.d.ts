@@ -3,7 +3,7 @@
  *
  * TODO: Generalize!!!
  *
- * TODO: Make sure can use both NestJS app and regular express...
+ * TODO: Make sure can use both NestJS api and regular express...
  * Think about logging/loggers, middlewae,
  * sessions, session implementation, auth, etc.
  */
@@ -12,13 +12,13 @@ import { GenObj } from "pk-ts-node-lib";
 export declare let port: any;
 export declare function getPort(aPort?: any): any;
 export declare let defaultRelStaticPath: string;
-export declare let app: any;
+export declare let api: any;
 /**
- * Implementing API can create a custom app, or default to Express.
- * @param anApp ? Optional Initialize app
- * @return an app instance - express, NestJS, etc
+ * Implementing API can create a custom api, or default to Express.
+ * @param anApi ? Optional Initialize api
+ * @return an api instance - express, NestJS, etc
  */
-export declare function getApp(anApp?: any): any;
+export declare function getApi(anApi?: any): any;
 /**
  * If false, returns default static path based on current working directory & defaultRelStaticPath
  * If
@@ -27,7 +27,7 @@ export declare function getStaticPath(apath?: any): any;
 /**
  * Initialize the API to use Cors, bodyParser, whatever
  * @param opts:object - use cors, what port, base URL, etc. Has some defaults.
- *   app: null (defaults to express()).  or an app
+ *   api: null (defaults to express()).  or an api
  *   cors: boolean (true),
  *   port: empty|number (defaults to process.env.PORT or 3000),
  *   compression: boolean (true),
@@ -38,7 +38,7 @@ export declare function getStaticPath(apath?: any): any;
  *
  *
  *
- * @return initialized app
+ * @return initialized api
  */
-export declare function initApp(opts?: GenObj): Promise<any>;
+export declare function initApi(opts?: GenObj): Promise<any>;
 //# sourceMappingURL=lib.d.ts.map

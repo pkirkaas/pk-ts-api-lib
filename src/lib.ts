@@ -3,7 +3,7 @@
  * 
  * TODO: Generalize!!!
  * 
- * TODO: Make sure can use both NestJS app and regular express...
+ * TODO: Make sure can use both NestJS api and regular express...
  * Think about logging/loggers, middlewae, 
  * sessions, session implementation, auth, etc.
  */
@@ -22,7 +22,6 @@ import cookieParser from "cookie-parser";
 import {
 	getDirname, dbgWrt, GenObj, cwd,
 	getFilename, slashPath, typeOf,
-	//} from "pk-ts-sqlite-lib";
 } from "pk-ts-node-lib";
 
 
@@ -42,24 +41,24 @@ export function getPort(aPort: any = null) {
 
 export let defaultRelStaticPath = '../../fe/build'
 
-export let app: any = null;
+export let api: any = null;
 /** 
- * Implementing API can create a custom app, or default to Express.
- * @param anApp ? Optional Initialize app 
- * @return an app instance - express, NestJS, etc
+ * Implementing API can create a custom api, or default to Express.
+ * @param anApi ? Optional Initialize api 
+ * @return an api instance - express, NestJS, etc
  */
-export function getApp(anApp:any = null) {
-	console.log(`In getApp`);
-	if (!app) {
-		if (anApp) {
-			app = anApp;
+export function getApi(anApi:any = null) {
+	console.log(`In getApi`);
+	if (!api) {
+		if (anApi) {
+			api = anApi;
 		}
 	} else {
 
-	console.log(`Initializing the app In getApp`);
-		app = express();
+	console.log(`Initializing the api In getApi`);
+		api = express();
 	}
-	return app;
+	return api;
 }
 
 /**
@@ -84,7 +83,7 @@ export function getStaticPath(apath:any = null) {
 /**
  * Initialize the API to use Cors, bodyParser, whatever   
  * @param opts:object - use cors, what port, base URL, etc. Has some defaults.
- *   app: null (defaults to express()).  or an app 
+ *   api: null (defaults to express()).  or an api 
  *   cors: boolean (true),
  *   port: empty|number (defaults to process.env.PORT or 3000),
  *   compression: boolean (true),
@@ -95,18 +94,18 @@ export function getStaticPath(apath:any = null) {
  * 
  * 
  * 
- * @return initialized app
+ * @return initialized api
  */
-export async function initApp(opts: GenObj = {}) {
+export async function initApi(opts: GenObj = {}) {
 	/*
-	if (!app) {
-		app = getApp();
+	if (!api) {
+		api = getApi();
 	}
 	*/
-	//let inApp = getApp();
-	//let toIA = typeOf(inApp);
+	//let inApi = getApi();
+	//let toIA = typeOf(inApi);
 	let toIA = 'tst';
-	let toA = typeOf(app);
+	let toA = typeOf(api);
 	console.log("In initapp:", { toA, toIA });
 	let defaults = {
 //		port :  process.env.PORT || 3000,
@@ -123,7 +122,7 @@ export async function initApp(opts: GenObj = {}) {
 
 	let settings = Object.assign({}, defaults, opts);
 
-	//settings.app = getApp(settings.app);
+	//settings.api = getApi(settings.api);
 	if (settings.killPort) {
 		await killPort(getPort());
 	}
@@ -132,7 +131,7 @@ export async function initApp(opts: GenObj = {}) {
 	console.log(`Thinking port is: [${settings.port}]`);
 	let appInitOpts: GenObj = {};
 
-	app = express();
+	api = express();
 	if (settings.apiBase) {
 		let apiBase = settings.apiBase;
 		let apiRouter = express.Router();
@@ -147,17 +146,17 @@ export async function initApp(opts: GenObj = {}) {
 
 		apiRouter.use('/auth', apiAuthRouter);
 
-   // app.use(apiBase, apiAuthRouter);
-		app.use(apiBase, apiRouter);
-		//app = express({ baseUrl: apiBase });
-		//app = express({ basepath: apiBase });
-		//app.set('base', apiBase);
+   // api.use(apiBase, apiAuthRouter);
+		api.use(apiBase, apiRouter);
+		//api = express({ baseUrl: apiBase });
+		//api = express({ basepath: apiBase });
+		//api.set('base', apiBase);
 		console.log(`Trying to use apiBase? Pre...`, apiBase);
 		//let apiRouter = express.Router();
-		//app.use(settings.apiBase, apiRouter);
+		//api.use(settings.apiBase, apiRouter);
 		/*
 			console.log(`Trying to use apiBase? Pre...`, settings.apiBase);
-			app.use(settings.apiBase, async (req, res, next) => {
+			api.use(settings.apiBase, async (req, res, next) => {
 				console.log(`Trying to use apiBase? ...In`, settings.apiBase);
 				next();
 			});
@@ -165,27 +164,27 @@ export async function initApp(opts: GenObj = {}) {
 	}
 	/*
 	else {
-		console.log(`Intitalize APP withoug base!!`);
-			app = express();
+		console.log(`Intitalize api withoug base!!`);
+			api = express();
 	}
 	*/
 
 
-	app.set('port',settings.port)
+	api.set('port',settings.port)
 
 	if (settings.cors) {
-		app.use(cors());
+		api.use(cors());
 	}
 	if (settings.compression) {
-		app.use(compression());
+		api.use(compression());
 	}
 
 	if (settings.json) {
-		app.use(bodyParser.json());
+		api.use(bodyParser.json());
 	}
 
 	if (settings.urlencoded) {
-		app.use(bodyParser.urlencoded({ extended: true }));
+		api.use(bodyParser.urlencoded({ extended: true }));
 	}
 
 	/**
@@ -209,7 +208,7 @@ export async function initApp(opts: GenObj = {}) {
 			staticPath = slashPath(cwd, staticPath);
 		}
 		console.log(`We think the static FE path should be: [${staticPath}]`);
-		app.use(express.static(staticPath));
+		api.use(express.static(staticPath));
 	}
 	/*
 	*/
@@ -222,14 +221,14 @@ export async function initApp(opts: GenObj = {}) {
 	console.log(`Is the port REALLY: [${port}]? Settings are:`, { settings });
 
 	// Have to listen on the port set here like:
-	// app.listen(app.get('port'), () => {console.log(`API server listening on port [${app.get('port')}]`)});
+	// api.listen(api.get('port'), () => {console.log(`API server listening on port [${api.get('port')}]`)});
 
-	return app;
+	return api;
 }
 
 
-// Create an Express app
-//export const app = express();
+// Create an Express api
+//export const api = express();
 //const dirName = '.';
 //const staticDir = '../../fe/public';
 //const dirName = getDirname(import.meta.url);
@@ -241,18 +240,18 @@ export async function initApp(opts: GenObj = {}) {
 await killPort(port);
 
 // Enable CORS
-app.use(cors());
+api.use(cors());
 
 // Try out compression - but check if it all works?
 // compress all responses
-app.use(compression());
+api.use(compression());
 // Express configuration
-app.set('port', port);
+api.set('port', port);
 
 // Parse JSON requests
-app.use(bodyParser.json());
+api.use(bodyParser.json());
 
-app.use(bodyParser.urlencoded({ extended: true }));
+api.use(bodyParser.urlencoded({ extended: true }));
 
 // Create a new router object
 export const apiRouter = express.Router();

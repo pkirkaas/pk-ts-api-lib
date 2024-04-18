@@ -1,62 +1,23 @@
 /**
  * Testing initialization of API server
  */
-import { enhanceApp, } from '../index.js';
-let app = enhanceApp();
+import { enhanceApi, } from '../index.js';
+let api = enhanceApi();
 ;
-/*
-let app = await initApp({
-    static: 'tstfe',
-
-});
-*/
-//app.listen();
-app.get('/', async (req, res) => {
+api.get('/', async (req, res) => {
     console.log("In api root");
-    //app.get('/',  (req, res) => {
-    //return { this: "root" };
     res.json({ this: "root" });
 });
-app.get('test', async (req, res) => {
+api.get('test', async (req, res) => {
     console.log("In test");
-    //app.get('/test',  (req, res) => {
-    //return { this: "worked" };
     res.json({ this: "worked again!" });
 });
 //let lPort = getPort();
-app.someVal = 123;
-app.showVal = () => {
+api.someVal = 123;
+api.showVal = () => {
     //@ts-ignore 
     let asv = this.someVal;
-    console.log(`in app showval:`, asv);
+    console.log(`in api showval:`, asv);
 };
-//app.port = 7774;
-//app.set('port', 9128);
-/*
-app.listenPort = () => {
-    //@ts-ignore
-    //let lport = this.port;
-    let lport = this.get('port');
-    //@ts-ignore
-    return this.listen(lport, () => { console.log(`API server self listening on port [${lport}]`) });
-}
-*/
-/*
-app.listenPort = function() {
-    //@ts-ignore
-    let lport = this.port;
-    //let lport = this.get('port');
-    //@ts-ignore
-    return this.listen(lport, () => { console.log(`API server self listening on port [${lport}]`) });
-}
-
-console.log('asv',{asv:app.someVal});
-*/
-app.listenPort();
-//app.listen(lPort, () => {console.log(`API server listening on port ${lPort}`)});
-//app.listen(app.get('port'), () => {console.log(`API server listening on port [${app.get('port')}]`)});
-//let appProps = allProps(app, 'tvp', 8);
-//dbgWrt(appProps);
-//console.log({ app });
-//app.listen();
+api.listenPort();
 //# sourceMappingURL=tstServer.js.map

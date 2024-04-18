@@ -21,11 +21,11 @@ import {
 
 export let eapp = express();
 
-export function enhanceApp(app:any = null) {
-	if (!app) {
-		app = express();
+export function enhanceApi(api:any = null) {
+	if (!api) {
+		api = express();
 	}
-	app.listenPort = function (aport: any = null) {
+	api.listenPort = function (aport: any = null) {
 		if (!aport) {
 			aport = this.port;
 		}
@@ -37,7 +37,7 @@ export function enhanceApp(app:any = null) {
 		}
 		return this.listen(aport, () => { console.log(`API server self listening on port [${aport}]`) });
 	};
-	return app;
+	return api;
 }
 
 eapp.listenPort = function (aport: any = null) {
@@ -53,10 +53,4 @@ eapp.listenPort = function (aport: any = null) {
 	return this.listen(aport, () => { console.log(`API server self listening on port [${aport}]`) });
 };
 
-
-
-/* 
-export function listenPort(port: any = null) {
-}
-*/
 

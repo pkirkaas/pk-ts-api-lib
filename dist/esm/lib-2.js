@@ -4,11 +4,11 @@
 import express from "express";
 import 'express-async-errors';
 export let eapp = express();
-export function enhanceApp(app = null) {
-    if (!app) {
-        app = express();
+export function enhanceApi(api = null) {
+    if (!api) {
+        api = express();
     }
-    app.listenPort = function (aport = null) {
+    api.listenPort = function (aport = null) {
         if (!aport) {
             aport = this.port;
         }
@@ -20,7 +20,7 @@ export function enhanceApp(app = null) {
         }
         return this.listen(aport, () => { console.log(`API server self listening on port [${aport}]`); });
     };
-    return app;
+    return api;
 }
 eapp.listenPort = function (aport = null) {
     if (!aport) {
@@ -34,8 +34,4 @@ eapp.listenPort = function (aport = null) {
     }
     return this.listen(aport, () => { console.log(`API server self listening on port [${aport}]`); });
 };
-/*
-export function listenPort(port: any = null) {
-}
-*/
 //# sourceMappingURL=lib-2.js.map

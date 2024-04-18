@@ -8,7 +8,7 @@ import {
 } from 'pk-ts-node-lib';
 
 import {
-	getApp, getPort, initApp, getStaticPath,
+	getApi, getPort, initApi, getStaticPath,
 } from '../index.js';
 
 
@@ -36,7 +36,7 @@ let tstFncs = {
 
 	async tstApi() {
 		console.log(`In API test.ts`);
-		let app = await initApp();
+		let app = await initApi();
 		/*
 		app.get('/test', async (req, res) => {
 			return { this: "worked" };
