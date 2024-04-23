@@ -2,21 +2,32 @@
  * Testing initialization of API server
  */
 
+import express from "express";
 
 import {
 	 runCli, typeOf, jsonClone, cwd, dbgWrt, allProps,
 } from 'pk-ts-node-lib';
 
 import {
-	getApi, getPort, initApi, getStaticPath, eapp, enhanceApi,
+	getApi, getPort, initApi, getStaticPath,  ApiOpts,
 } from '../index.js';
 
-let api = enhanceApi();;
+let api = await initApi();;
 
-api.get('/', async (req, res) => {
+let apiRouter = express.Router();
+
+
+apiRouter.get('/', async (req, res) => {
 	console.log("In api root");
-	res.json( { this: "root" });
+	res.json( { this: "api-root" });
 });
+
+apiRouter.get('/tst', async (req, res) => {
+	console.log("In api tst");
+	res.json( { that: "tst" });
+});
+
+api.useRouter('/api', apiRouter);
 
 api.get('test', async (req, res) => {
 	console.log("In test");
@@ -32,5 +43,8 @@ api.showVal = () => {
 	console.log(`in api showval:`, asv);
 };
 
+let apiProps = allProps(api);
+//dbgWrt(apiProps);
+//console.log({apiProps});
 
 api.listenPort();

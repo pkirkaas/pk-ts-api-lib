@@ -24,10 +24,10 @@ import {
 } from 'pk-ts-node-lib';
 
 import {
-	getApi, getPort, initApi, getStaticPath, eapp, enhanceApi,
+	getApi, getPort, initApi, getStaticPath, 
 } from '../index.js';
 
-let app = enhanceApi();
+let app = initApi();
 app.set('tstset', 'a-test-val');
 app.rawset = "set without set";
 let tstget = app.get('tstset');

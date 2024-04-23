@@ -97,8 +97,23 @@ export function getStaticPath(apath:any = null) {
  * 
  * @return initialized api
  */
-export async function initApi(opts: GenObj = {}) {
-	let defaults = {
+
+/**
+ * Parameters to initialize the server/API
+ */
+export type ApiOpts = {
+	port?: number|string,
+	killPort?:boolean,
+	cors?: boolean,
+	compression?: boolean,
+	json?: boolean,
+	urlencoded?: boolean,
+	cookieParser?: boolean,
+	static?:boolean|string,
+	routers?: {[key: string]:any}, //Object keyed with string pathSegment to the routers
+};
+export  function initApi(opts: ApiOpts = {}) {
+	let defaults:ApiOpts = {
 		killPort: true,
 		cors: true,
 //		bodyParser: true,
@@ -107,15 +122,20 @@ export async function initApi(opts: GenObj = {}) {
 		urlencoded: true,
 		cookieParser: true,
 		static: true,
-		apiBase:'/api',
 	};
 
 	let settings = Object.assign({}, defaults, opts);
 
 	//settings.api = getApi(settings.api);
 	if (settings.killPort) {
-		await killPort(getPort());
+		let kport = getPort();
+		console.log(`Oh, trying to kill port [${kport}]!`);
+
+		//Not sure this works?
+    killPort(getPort()) .then() .catch();
+		// Reports an error on Windows - expects a PID - but maybe because nothin is on that port?
 	}
+
 
 	settings.port = getPort(settings.port);
 	console.log(`Thinking port is: [${settings.port}]`);
@@ -135,6 +155,7 @@ export async function initApi(opts: GenObj = {}) {
 	};
 
 
+	/*
 	if (settings.apiBase) {
 		let apiBase = settings.apiBase;
 		let apiRouter = express.Router();
@@ -142,21 +163,15 @@ export async function initApi(opts: GenObj = {}) {
 			res.json( { this: "root" });
     });
 
-		/*
-		let apiAuthRouter = express.Router();
-		apiAuthRouter.get('/', (req, res) => {
-			res.json( { auth: "subauth" });
-    });
-
-		apiRouter.useRouter('/auth', apiAuthRouter);
-		*/
-
-   // api.use(apiBase, apiAuthRouter);
 		api.useRouter(apiBase, apiRouter);
-		//api = express({ baseUrl: apiBase });
-		//api = express({ basepath: apiBase });
-		//api.set('base', apiBase);
 		console.log(`Trying to use apiBase? Pre...`, apiBase);
+	}
+	*/
+	if (settings.routers) { // routers keyed by path
+		for (let path in settings.routers) {
+			let router = settings.routers[path];
+			api.useRouter(path, router);
+		}
 	}
 
 
@@ -201,6 +216,19 @@ export async function initApi(opts: GenObj = {}) {
 		api.use(express.static(staticPath));
 	}
 	console.log(`Is the port REALLY: [${port}]? Settings are:`, { settings });
+
+	api.listenPort = function (aport: any = null) {
+		if (!aport) {
+			aport = this.port;
+		}
+		if (!aport) {
+			aport = this.get('port');
+		}
+		if (!aport) {
+			aport = process.env.PORT || 3000;
+		}
+		return this.listen(aport, () => { console.log(`API server self listening on port [${aport}]`) });
+	};
 
 	// Have to listen on the port set here like:
 	// api.listen(api.get('port'), () => {console.log(`API server listening on port [${api.get('port')}]`)});

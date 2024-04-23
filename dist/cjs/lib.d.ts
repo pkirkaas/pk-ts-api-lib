@@ -8,7 +8,6 @@
  * sessions, session implementation, auth, etc.
  */
 import 'express-async-errors';
-import { GenObj } from "pk-ts-node-lib";
 export declare let port: any;
 export declare function getPort(aPort?: any): any;
 export declare let defaultRelStaticPath: string;
@@ -40,5 +39,21 @@ export declare function getStaticPath(apath?: any): any;
  *
  * @return initialized api
  */
-export declare function initApi(opts?: GenObj): Promise<any>;
+/**
+ * Parameters to initialize the server/API
+ */
+export type ApiOpts = {
+    port?: number | string;
+    killPort?: boolean;
+    cors?: boolean;
+    compression?: boolean;
+    json?: boolean;
+    urlencoded?: boolean;
+    cookieParser?: boolean;
+    static?: boolean | string;
+    routers?: {
+        [key: string]: any;
+    };
+};
+export declare function initApi(opts?: ApiOpts): any;
 //# sourceMappingURL=lib.d.ts.map
