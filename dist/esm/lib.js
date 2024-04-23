@@ -14,7 +14,8 @@ import compression from "compression";
 import 'express-async-errors';
 import cors from "cors";
 import bodyParser from "body-parser";
-import { cwd, slashPath, typeOf, } from "pk-ts-node-lib";
+import { cwd, slashPath, } from "pk-ts-node-lib";
+//export type = {
 export let port = null;
 export function getPort(aPort = null) {
     if (!port) {
@@ -82,18 +83,7 @@ export function getStaticPath(apath = null) {
  * @return initialized api
  */
 export async function initApi(opts = {}) {
-    /*
-    if (!api) {
-        api = getApi();
-    }
-    */
-    //let inApi = getApi();
-    //let toIA = typeOf(inApi);
-    let toIA = 'tst';
-    let toA = typeOf(api);
-    console.log("In initapp:", { toA, toIA });
     let defaults = {
-        //		port :  process.env.PORT || 3000,
         killPort: true,
         cors: true,
         //		bodyParser: true,
@@ -113,39 +103,36 @@ export async function initApi(opts = {}) {
     console.log(`Thinking port is: [${settings.port}]`);
     let appInitOpts = {};
     api = express();
+    api.myRouters = {};
+    /** Add  */
+    api.useRouter = (path, router) => {
+        if (!router.subpath) {
+            router.subpath = path;
+        }
+        api.myRouters[path] = router;
+        api.use(path, router);
+    };
     if (settings.apiBase) {
         let apiBase = settings.apiBase;
         let apiRouter = express.Router();
         apiRouter.get('/', (req, res) => {
             res.json({ this: "root" });
         });
+        /*
         let apiAuthRouter = express.Router();
         apiAuthRouter.get('/', (req, res) => {
-            res.json({ auth: "subauth" });
-        });
-        apiRouter.use('/auth', apiAuthRouter);
+            res.json( { auth: "subauth" });
+    });
+
+        apiRouter.useRouter('/auth', apiAuthRouter);
+        */
         // api.use(apiBase, apiAuthRouter);
-        api.use(apiBase, apiRouter);
+        api.useRouter(apiBase, apiRouter);
         //api = express({ baseUrl: apiBase });
         //api = express({ basepath: apiBase });
         //api.set('base', apiBase);
         console.log(`Trying to use apiBase? Pre...`, apiBase);
-        //let apiRouter = express.Router();
-        //api.use(settings.apiBase, apiRouter);
-        /*
-            console.log(`Trying to use apiBase? Pre...`, settings.apiBase);
-            api.use(settings.apiBase, async (req, res, next) => {
-                console.log(`Trying to use apiBase? ...In`, settings.apiBase);
-                next();
-            });
-            */
     }
-    /*
-    else {
-        console.log(`Intitalize api withoug base!!`);
-            api = express();
-    }
-    */
     api.set('port', settings.port);
     if (settings.cors) {
         api.use(cors());
@@ -179,12 +166,6 @@ export async function initApi(opts = {}) {
         console.log(`We think the static FE path should be: [${staticPath}]`);
         api.use(express.static(staticPath));
     }
-    /*
-    */
-    /*
-    */
-    /*
-    */
     console.log(`Is the port REALLY: [${port}]? Settings are:`, { settings });
     // Have to listen on the port set here like:
     // api.listen(api.get('port'), () => {console.log(`API server listening on port [${api.get('port')}]`)});
