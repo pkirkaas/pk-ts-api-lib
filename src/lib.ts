@@ -20,8 +20,8 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import {
-	getDirname, dbgWrt, GenObj, cwd,
-	getFilename, slashPath, typeOf,
+	getDirname, dbgWrt, GenObj, cwd, isDirectory, isFile,
+	getFilename, slashPath, typeOf, PkError,
 } from "pk-ts-node-lib";
 
 //export type = {
@@ -40,7 +40,7 @@ export function getPort(aPort: any = null) {
 	return port;
 }
 
-export let defaultRelStaticPath = '../../fe/build'
+export let defaultRelStaticPath = '../fe/build'
 
 export let api: any = null;
 /** 
@@ -78,6 +78,9 @@ export function getStaticPath(apath:any = null) {
 	if (!path.isAbsolute(apath)) {
 		apath = slashPath(cwd, apath)
 	}
+	if (!isDirectory(apath)) {
+		throw new PkError(`${apath} is not a directory`);
+	}
 	return apath;
 }
 
@@ -114,7 +117,7 @@ export type ApiOpts = {
 };
 export  function initApi(opts: ApiOpts = {}) {
 	let defaults:ApiOpts = {
-		killPort: true,
+		killPort: false,
 		cors: true,
 //		bodyParser: true,
 		compression: true,
@@ -140,7 +143,6 @@ export  function initApi(opts: ApiOpts = {}) {
 	settings.port = getPort(settings.port);
 	console.log(`Thinking port is: [${settings.port}]`);
 	let appInitOpts: GenObj = {};
-
 	api = express();
 	api.myRouters =  {};
 
@@ -167,13 +169,6 @@ export  function initApi(opts: ApiOpts = {}) {
 		console.log(`Trying to use apiBase? Pre...`, apiBase);
 	}
 	*/
-	if (settings.routers) { // routers keyed by path
-		for (let path in settings.routers) {
-			let router = settings.routers[path];
-			api.useRouter(path, router);
-		}
-	}
-
 
 	api.set('port',settings.port)
 
@@ -203,6 +198,8 @@ export  function initApi(opts: ApiOpts = {}) {
 
 	//debugging...
 	if (settings.static) { // Either true or a string path
+		let staticPath = getStaticPath(settings.static);
+		/*
 		let staticPath  = '';
 		if (settings.static === true) { //use default
 			staticPath = defaultRelStaticPath;
@@ -212,10 +209,19 @@ export  function initApi(opts: ApiOpts = {}) {
 		if (!path.isAbsolute(staticPath)) { // Make absolute path - hmm, might be very tricky to get right base path
 			staticPath = slashPath(cwd, staticPath);
 		}
+		*/
 		console.log(`We think the static FE path should be: [${staticPath}]`);
+		api.staticPath = staticPath;
 		api.use(express.static(staticPath));
 	}
-	console.log(`Is the port REALLY: [${port}]? Settings are:`, { settings });
+//	console.log(`Is the port REALLY: [${port}]? Settings are:`, { settings });
+	if (settings.routers) { // routers keyed by path
+		for (let path in settings.routers) {
+			let router = settings.routers[path];
+			api.useRouter(path, router);
+		}
+	}
+
 
 	api.listenPort = function (aport: any = null) {
 		if (!aport) {
@@ -226,6 +232,20 @@ export  function initApi(opts: ApiOpts = {}) {
 		}
 		if (!aport) {
 			aport = process.env.PORT || 3000;
+		}
+		if (this.staticPath) {
+			// For react routing - have to send every route NOT starting w. '/api/xxx' to the static index file 
+			let staticFile = slashPath(this.staticPath,'index.html');
+			if (!isFile(staticFile)) {
+				throw new PkError(`The file [${staticFile}] not found`);
+			}
+
+			console.log(`Redirecting all other URLs to [${staticFile}]`);
+			this.get("*", (req, res) => {
+				let origUrl = req.originalUrl;
+				//console.log(`sending request URL [${origUrl}] to [${staticFile}]`);
+				res.sendFile(staticFile);
+			});
 		}
 		return this.listen(aport, () => { console.log(`API server self listening on port [${aport}]`) });
 	};
