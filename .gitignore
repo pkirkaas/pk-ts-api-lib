@@ -1,4 +1,5 @@
 # Node artifact files
+/node_modules/
 #dist/
 
 #Symlinked common
@@ -84,41 +85,3 @@ gcloud*key.json
 #Backup files
 *.bak
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/MongoQP-api/configs/mongo-connections.json5
-/MongoQP-api/configs/tst-set.json5
-/common/tsconfig.tsbuildinfo
-/MongoQP-api/src/lib/node/node-operations.ts
-/MongoQP-api/src/lib/common/common-operations.ts
-/MongoQP-api/src/lib/common/index.ts
-/MongoQP-api/src/lib/node/index.ts
-/MongoQP-api/src/lib/common/Readme.MD
-/MongoQP-api/src/lib/node/Readme.MD
-/MongoQP-api/src/lib/node/cliSupport.ts
-/pk-lib/client/tsconfig.json
-/MongoQP-client/src/lib/common/index.ts
-/MongoQP-client/src/lib/common/common-operations.ts
-/MongoQP-client/src/lib/client/index.ts
