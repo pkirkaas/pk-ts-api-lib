@@ -19,10 +19,12 @@ export declare let api: any;
  */
 export declare function getApi(anApi?: any): any;
 /**
- * If false, returns default static path based on current working directory & defaultRelStaticPath
- * If
+ * Turns out to be difficult, since has to be absolute path & we don't easily knoow where we are...
+ * So we have to go up the tree....
+ * @param dirname - the name of the directory where the server script lives
+ * @param apath - optional relpath, else defaunt
  */
-export declare function getStaticPath(apath?: any): any;
+export declare function getStaticPath(dirname: string, apath?: string): string;
 /**
  * Initialize the API to use Cors, bodyParser, whatever
  * @param opts:object - use cors, what port, base URL, etc. Has some defaults.
@@ -50,7 +52,7 @@ export type ApiOpts = {
     json?: boolean;
     urlencoded?: boolean;
     cookieParser?: boolean;
-    static?: boolean | string;
+    static?: string;
     routers?: {
         [key: string]: any;
     };

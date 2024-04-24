@@ -40,7 +40,7 @@ export function getPort(aPort: any = null) {
 	return port;
 }
 
-export let defaultRelStaticPath = '../fe/build'
+export let defaultRelStaticPath = 'fe/build'
 
 export let api: any = null;
 /** 
@@ -63,26 +63,31 @@ export function getApi(anApi:any = null) {
 }
 
 /**
- * If false, returns default static path based on current working directory & defaultRelStaticPath
- * If 
+ * Turns out to be difficult, since has to be absolute path & we don't easily knoow where we are...
+ * So we have to go up the tree....
+ * @param dirname - the name of the directory where the server script lives
+ * @param apath - optional relpath, else defaunt 
  */
-export function getStaticPath(apath:any = null) {
-	let tstCwd = process.cwd();
-	console.log("In getSP:", {cwd, tstCwd});
-	if (apath === false) {
-		return false;
-	}
-	if (!apath || (apath === true)) {
+//export function getStaticPath(apath:any = null) {
+export function getStaticPath(dirname:string, apath?:string) {
+	if (!apath) {
 		apath = defaultRelStaticPath;
 	}
-	if (!path.isAbsolute(apath)) {
-		apath = slashPath(cwd, apath)
+	let tstDir = dirname;
+	let staticPath = '';
+	for (let i =0; i<4; i++) {
+		tstDir = slashPath(tstDir,'..');
+		staticPath = slashPath(tstDir, apath);
+		console.log(`Testing staticPath`, {dirname, apath, tstDir, staticPath});
+		if (isDirectory(staticPath)) {
+			console.log(`Found the static path! [${staticPath}]`);
+			return staticPath
+		}
 	}
-	if (!isDirectory(apath)) {
-		throw new PkError(`${apath} is not a directory`);
-	}
-	return apath;
+	throw new PkError(`Could find static path - last checked was: [${staticPath}]`);
 }
+
+
 
 /**
  * Initialize the API to use Cors, bodyParser, whatever   
@@ -112,7 +117,7 @@ export type ApiOpts = {
 	json?: boolean,
 	urlencoded?: boolean,
 	cookieParser?: boolean,
-	static?:boolean|string,
+	static?:string, //If present, has to absolute path where the FE is found
 	routers?: {[key: string]:any}, //Object keyed with string pathSegment to the routers
 };
 export  function initApi(opts: ApiOpts = {}) {
@@ -124,7 +129,6 @@ export  function initApi(opts: ApiOpts = {}) {
 		json: true,
 		urlencoded: true,
 		cookieParser: true,
-		static: true,
 	};
 
 	let settings = Object.assign({}, defaults, opts);
@@ -198,18 +202,10 @@ export  function initApi(opts: ApiOpts = {}) {
 
 	//debugging...
 	if (settings.static) { // Either true or a string path
-		let staticPath = getStaticPath(settings.static);
-		/*
-		let staticPath  = '';
-		if (settings.static === true) { //use default
-			staticPath = defaultRelStaticPath;
-		} else {
-			staticPath = settings.static;
+		let staticPath = settings.static;
+		if (!isDirectory(staticPath)) { //double check
+			throw new PkError(`In initApi - bad setting for static - should be a dir, but is: [${staticPath}]`);
 		}
-		if (!path.isAbsolute(staticPath)) { // Make absolute path - hmm, might be very tricky to get right base path
-			staticPath = slashPath(cwd, staticPath);
-		}
-		*/
 		console.log(`We think the static FE path should be: [${staticPath}]`);
 		api.staticPath = staticPath;
 		api.use(express.static(staticPath));
@@ -224,6 +220,7 @@ export  function initApi(opts: ApiOpts = {}) {
 
 
 	api.listenPort = function (aport: any = null) {
+		console.log(`THIS IS IN THE GIT REPO`);
 		if (!aport) {
 			aport = this.port;
 		}

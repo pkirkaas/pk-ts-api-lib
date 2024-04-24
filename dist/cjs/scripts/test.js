@@ -1,8 +1,8 @@
 /**
  * Not sure how to best do this - but trying to test various API configs - have to eventually include nestjs
  */
-import { runCli, cwd, } from 'pk-ts-node-lib';
-import { getPort, initApi, getStaticPath, } from '../index.js';
+import { runCli, } from 'pk-ts-node-lib';
+import { getPort, initApi, } from '../index.js';
 let tstFncs = {
     async default() {
         console.log(`In API test.ts`);
@@ -12,14 +12,7 @@ let tstFncs = {
         console.log(`aport: [${aport}]`);
     },
     async tstSP() {
-        let res = {
-            falseP: getStaticPath(false),
-            trueP: getStaticPath(true),
-            emptyP: getStaticPath(),
-            relP: getStaticPath('./tmp'),
-            abbP: getStaticPath('/tmp'),
-            cwd,
-        };
+        let res = {};
         console.log({ res });
     },
     async tstApi() {

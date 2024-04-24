@@ -24,12 +24,6 @@ let tstFncs = {
 
 	async tstSP() {
 		let res = {
-			falseP: getStaticPath(false),
-			trueP: getStaticPath(true),
-			emptyP: getStaticPath(),
-      relP: getStaticPath('./tmp'),
-      abbP: getStaticPath('/tmp'),
-			cwd,
 		}
 		console.log({ res });
 	},
