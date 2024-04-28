@@ -13,7 +13,7 @@ import compression from "compression";
 import 'express-async-errors';
 import cors from "cors";
 import bodyParser from "body-parser";
-import { isDirectory, isFile, slashPath, PkError, } from "pk-ts-node-lib";
+import { isEmpty, isDirectory, isFile, slashPath, PkError, } from "pk-ts-node-lib";
 //export type = {
 export let port = null;
 export function getPort(aPort = null) {
@@ -144,7 +144,7 @@ export function initApi(opts = {}) {
         api.use(express.static(staticPath));
     }
     //	console.log(`Is the port REALLY: [${port}]? Settings are:`, { settings });
-    if (settings.routers) { // routers keyed by path
+    if (!(isEmpty(settings.routers))) { // routers keyed by path
         for (let path in settings.routers) {
             let router = settings.routers[path];
             api.useRouter(path, router);

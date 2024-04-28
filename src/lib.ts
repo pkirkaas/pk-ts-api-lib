@@ -20,7 +20,7 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import {
-	getDirname, dbgWrt, GenObj, cwd, isDirectory, isFile,
+	getDirname, isEmpty, dbgWrt, GenObj, cwd, isDirectory, isFile,
 	getFilename, slashPath, typeOf, PkError,
 } from "pk-ts-node-lib";
 
@@ -211,7 +211,7 @@ export  function initApi(opts: ApiOpts = {}) {
 		api.use(express.static(staticPath));
 	}
 //	console.log(`Is the port REALLY: [${port}]? Settings are:`, { settings });
-	if (settings.routers) { // routers keyed by path
+	if (!(isEmpty(settings.routers))) { // routers keyed by path
 		for (let path in settings.routers) {
 			let router = settings.routers[path];
 			api.useRouter(path, router);
