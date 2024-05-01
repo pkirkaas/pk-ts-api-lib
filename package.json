@@ -40,9 +40,18 @@
     "express-list-endpoints": "^6.0.0",
     "jsonwebtoken": "*",
     "kill-port": "*",
-    "pk-ts-node-lib": "git+https://github.com/pkirkaas/pk-ts-node-lib.git#working",
+    "pk-ts-node-lib": "github:pkirkaas/pk-ts-node-lib#working",
     "reflect-metadata": "*",
     "rxjs": "*",
     "serialize-error": "*"
-  }
+  },
+    "alt-lib-gits" : [ {
+    "pk-ts-node-lib": "git+https://github.com/pkirkaas/pk-ts-node-lib.git#working",
+  "no":"nothing"},{
+    "pk-ts-node-lib": "github:pkirkaas/pk-ts-node-lib#working",
+  "no":"nothing"},{
+    "pk-ts-node-lib": "git+https://github.com/pkirkaas/pk-ts-node-lib.git#working",
+  "no":"nothing"},{
+  "no":"nothing"},{
+  "no":"nothing"}]
 }
