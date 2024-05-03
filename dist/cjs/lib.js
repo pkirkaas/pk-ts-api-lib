@@ -150,7 +150,7 @@ export function initApi(opts = {}) {
             api.useRouter(path, router);
         }
     }
-    api.listenPort = function (aport = null) {
+    api.listenPort = async function (aport = null) {
         console.log(`THIS IS REALLY REALLY IN THE LOCAL LINK, NOT REPO`);
         if (!aport) {
             aport = this.port;
@@ -174,7 +174,17 @@ export function initApi(opts = {}) {
                 res.sendFile(staticFile);
             });
         }
-        return this.listen(aport, () => { console.log(`API server self listening on port [${aport}]`); });
+        try {
+            let listen = await this.listen(aport, () => { console.log(`API server self listening on port [${aport}]`); });
+            return listen;
+        }
+        catch (e) {
+            console.error(`The port was busy - let's try killing it!`);
+            //await killPort(getPort());
+            await killPort(aport);
+            let listen = await this.listen(aport, () => { console.log(`After kill port - try again... API server self listening on port [${aport}]`); });
+            return listen;
+        }
     };
     // Have to listen on the port set here like:
     // api.listen(api.get('port'), () => {console.log(`API server listening on port [${api.get('port')}]`)});
