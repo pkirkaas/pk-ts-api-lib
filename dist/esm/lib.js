@@ -63,7 +63,7 @@ export function getStaticPath(dirname, apath) {
     for (let i = 0; i < 4; i++) {
         tstDir = slashPath(tstDir, '..');
         staticPath = slashPath(tstDir, apath);
-        console.log(`Testing staticPath`, { dirname, apath, tstDir, staticPath });
+        //console.log(`Testing staticPath`, {dirname, apath, tstDir, staticPath});
         if (isDirectory(staticPath)) {
             console.log(`Found the static path! [${staticPath}]`);
             return staticPath;
@@ -151,7 +151,6 @@ export function initApi(opts = {}) {
         }
     }
     api.listenPort = async function (aport = null) {
-        console.log(`THIS IS REALLY REALLY IN THE LOCAL LINK, NOT REPO`);
         if (!aport) {
             aport = this.port;
         }
