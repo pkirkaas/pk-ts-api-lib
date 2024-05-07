@@ -59,14 +59,14 @@ export let api: any = null;
  * @return an api instance - express, NestJS, etc
  */
 export function getApi(anApi:any = null) {
-	console.log(`In getApi`);
+//	console.log(`In getApi`);
 	if (!api) {
 		if (anApi) {
 			api = anApi;
 		}
 	} else {
 
-	console.log(`Initializing the api In getApi`);
+	//console.log(`Initializing the api In getApi`);
 		api = express();
 	}
 	return api;
@@ -146,7 +146,7 @@ export  function initApi(opts: ApiOpts = {}) {
 	};
 
 	let settings:ApiOpts = Object.assign({}, defaults, opts);
-	console.log(`In initApi - settings:`,{settings});
+	//console.log(`In initApi - settings:`,{settings});
 
 	//settings.api = getApi(settings.api);
 	if (settings.killPort) {
