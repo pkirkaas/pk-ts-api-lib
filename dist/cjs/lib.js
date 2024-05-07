@@ -13,7 +13,7 @@ import compression from "compression";
 import 'express-async-errors';
 import cors from "cors";
 import bodyParser from "body-parser";
-import { isEmpty, dbgWrt, isDirectory, isFile, slashPath, PkError, subObj, } from "pk-ts-node-lib";
+import { isEmpty, isDirectory, isFile, slashPath, PkError, subObj, } from "pk-ts-node-lib";
 //export type = {
 export function getReqFields(req, extraFields = []) {
     let reqFieldList = [
@@ -174,8 +174,8 @@ export function initApi(opts = {}) {
             console.log(`Creating generic unhandled route handler`);
             handlerFunction = async (req, res) => {
                 let reqData = getReqFields(req);
-                let fpath = dbgWrt({ reqData });
-                console.error(`Unhandled Route - data:`, { reqData, fpath });
+                let fpath = //dbgWrt({reqData});
+                 console.error(`Unhandled Route - data:`, { reqData, });
                 res.status(404).json({ unhandledRoute: reqData });
             };
         }

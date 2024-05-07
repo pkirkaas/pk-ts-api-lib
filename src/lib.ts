@@ -244,8 +244,8 @@ export  function initApi(opts: ApiOpts = {}) {
 			console.log(`Creating generic unhandled route handler`);
 			 handlerFunction = async (req, res) => {
 			let reqData = getReqFields(req);
-			let fpath = dbgWrt({reqData});
-			console.error(`Unhandled Route - data:`,{reqData, fpath});
+			let fpath = //dbgWrt({reqData});
+			console.error(`Unhandled Route - data:`,{reqData,});
 			res.status(404).json({unhandledRoute:reqData});
 			};
 		} else if (typeof unhandledRoutes === 'function') {
