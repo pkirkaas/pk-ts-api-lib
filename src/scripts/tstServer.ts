@@ -12,10 +12,10 @@ import {
 	getApi, getPort, initApi, getStaticPath,  ApiOpts,
 } from '../index.js';
 
-let api = await initApi();;
 
 let apiRouter = express.Router();
 
+let api = await initApi({routers:{'/api':apiRouter}});;
 
 apiRouter.get('/', async (req, res) => {
 	console.log("In api root");

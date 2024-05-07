@@ -13,8 +13,18 @@ import compression from "compression";
 import 'express-async-errors';
 import cors from "cors";
 import bodyParser from "body-parser";
-import { isEmpty, isDirectory, isFile, slashPath, PkError, } from "pk-ts-node-lib";
+import { isEmpty, isDirectory, isFile, slashPath, PkError, subObj, } from "pk-ts-node-lib";
 //export type = {
+export function getReqFields(req, extraFields = []) {
+    let reqFieldList = [
+        'baseUrl', 'body', 'cookies', 'hostname', 'ip', 'method',
+        'originalUrl', 'params', 'path', 'protocol', 'query', { route: 'path' },
+        'secure', 'subdomains',
+    ];
+    console.log('in getReqFields', { reqFieldList });
+    let reqFields = subObj(req, reqFieldList);
+    return reqFields;
+}
 export let port = null;
 export function getPort(aPort = null) {
     if (!port) {
@@ -77,11 +87,15 @@ export function initApi(opts = {}) {
         cors: true,
         //		bodyParser: true,
         compression: true,
+        routers: {},
         json: true,
         urlencoded: true,
         cookieParser: true,
+        //unhandledRoutes:{api:true},
+        unhandledRoutes: true,
     };
     let settings = Object.assign({}, defaults, opts);
+    console.log(`In initApi - settings:`, { settings });
     //settings.api = getApi(settings.api);
     if (settings.killPort) {
         let kport = getPort();
@@ -145,9 +159,35 @@ export function initApi(opts = {}) {
     }
     //	console.log(`Is the port REALLY: [${port}]? Settings are:`, { settings });
     if (!(isEmpty(settings.routers))) { // routers keyed by path
+        //let unhandledRoutes = settings.unhandledRoutes;
         for (let path in settings.routers) {
+            //if(isObject(unhandledRoutes)) { if(unhandledRoutes[path]) { } };
             let router = settings.routers[path];
             api.useRouter(path, router);
+        }
+    }
+    let unhandledRoutes = settings.unhandledRoutes;
+    if (unhandledRoutes) { // What possible values? For now, just if true, report all unhandled routes
+        console.log("Hoping to handle unhandledRoutes");
+        let handlerFunction = null;
+        if (unhandledRoutes === true) { // Generic Handling
+            console.log(`Creating generic unhandled route handler`);
+            handlerFunction = async (req, res) => {
+                let reqData = getReqFields(req);
+                console.error(`Unhandled Route - data:`, { reqData });
+                res.status(404).json({ unhandledRoute: reqData });
+            };
+        }
+        else if (typeof unhandledRoutes === 'function') {
+            console.log(`Creating custom unhandled route handler`);
+            handlerFunction = unhandledRoutes;
+        }
+        if (handlerFunction) {
+            console.log(`Thinking we have a handler function`);
+            api.all('/api*', handlerFunction);
+        }
+        else {
+            console.error(`Don't know what to do with init val unhandledRoutes:`, { unhandledRoutes });
         }
     }
     api.listenPort = async function (aport = null) {

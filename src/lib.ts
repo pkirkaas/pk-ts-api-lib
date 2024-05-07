@@ -20,11 +20,21 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import {
-	getDirname, isEmpty, dbgWrt, GenObj, cwd, isDirectory, isFile,
-	getFilename, slashPath, typeOf, PkError,
+	getDirname, isEmpty, dbgWrt, GenObj, cwd, isDirectory, isFile, isClassOrFunction,
+	getFilename, isObject, slashPath, typeOf, PkError, subObj,
 } from "pk-ts-node-lib";
 
 //export type = {
+
+export function getReqFields(req,extraFields:any[]=[]) {
+ let reqFieldList:any[] = [ 
+'baseUrl', 'body', 'cookies', 'hostname', 'ip', 'method',
+'originalUrl', 'params', 'path', 'protocol', 'query', {route:'path'},
+'secure', 'subdomains', ];
+console.log('in getReqFields', {reqFieldList});
+let reqFields = subObj(req, reqFieldList);
+return reqFields;
+}
 
 
 export let port: any = null;
@@ -119,6 +129,7 @@ export type ApiOpts = {
 	cookieParser?: boolean,
 	static?:string, //If present, has to absolute path where the FE is found
 	routers?: {[key: string]:any}, //Object keyed with string pathSegment to the routers
+	unhandledRoutes?:any, //If true, try to catch & process unandled routes - true, false or function, or oject keyed path:opt
 };
 export  function initApi(opts: ApiOpts = {}) {
 	let defaults:ApiOpts = {
@@ -126,12 +137,16 @@ export  function initApi(opts: ApiOpts = {}) {
 		cors: true,
 //		bodyParser: true,
 		compression: true,
+		routers:{},
 		json: true,
 		urlencoded: true,
 		cookieParser: true,
+		//unhandledRoutes:{api:true},
+		unhandledRoutes:true,
 	};
 
-	let settings = Object.assign({}, defaults, opts);
+	let settings:ApiOpts = Object.assign({}, defaults, opts);
+	console.log(`In initApi - settings:`,{settings});
 
 	//settings.api = getApi(settings.api);
 	if (settings.killPort) {
@@ -212,11 +227,38 @@ export  function initApi(opts: ApiOpts = {}) {
 	}
 //	console.log(`Is the port REALLY: [${port}]? Settings are:`, { settings });
 	if (!(isEmpty(settings.routers))) { // routers keyed by path
+		//let unhandledRoutes = settings.unhandledRoutes;
 		for (let path in settings.routers) {
+			//if(isObject(unhandledRoutes)) { if(unhandledRoutes[path]) { } };
 			let router = settings.routers[path];
 			api.useRouter(path, router);
 		}
 	}
+
+	let unhandledRoutes = settings.unhandledRoutes;
+
+	if (unhandledRoutes) { // What possible values? For now, just if true, report all unhandled routes
+		console.log("Hoping to handle unhandledRoutes");
+		let handlerFunction:any = null;
+		if (unhandledRoutes === true) { // Generic Handling
+			console.log(`Creating generic unhandled route handler`);
+			 handlerFunction = async (req, res) => {
+			let reqData = getReqFields(req);
+			console.error(`Unhandled Route - data:`,{reqData});
+			res.status(404).json({unhandledRoute:reqData});
+			};
+		} else if (typeof unhandledRoutes === 'function') {
+			console.log(`Creating custom unhandled route handler`);
+			handlerFunction = unhandledRoutes;
+		}  
+		if (handlerFunction) {
+			console.log(`Thinking we have a handler function`);
+			api.all('/api*', handlerFunction);
+		} else {
+			console.error(`Don't know what to do with init val unhandledRoutes:`,{unhandledRoutes});
+		}
+	}
+	 
 
 
 	api.listenPort = async function (aport: any = null) {
@@ -253,7 +295,7 @@ export  function initApi(opts: ApiOpts = {}) {
 			let listen = await this.listen(aport, () => { console.log(`After kill port - try again... API server self listening on port [${aport}]`) });
 			return listen;
 		}
-	};
+	}
 
 	// Have to listen on the port set here like:
 	// api.listen(api.get('port'), () => {console.log(`API server listening on port [${api.get('port')}]`)});

@@ -4,9 +4,9 @@
 import express from "express";
 import { allProps, } from 'pk-ts-node-lib';
 import { initApi, } from '../index.js';
-let api = await initApi();
-;
 let apiRouter = express.Router();
+let api = await initApi({ routers: { '/api': apiRouter } });
+;
 apiRouter.get('/', async (req, res) => {
     console.log("In api root");
     res.json({ this: "api-root" });

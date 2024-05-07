@@ -8,6 +8,8 @@
  * sessions, session implementation, auth, etc.
  */
 import 'express-async-errors';
+import { GenObj } from "pk-ts-node-lib";
+export declare function getReqFields(req: any, extraFields?: any[]): GenObj;
 export declare let port: any;
 export declare function getPort(aPort?: any): any;
 export declare let defaultRelStaticPath: string;
@@ -56,6 +58,7 @@ export type ApiOpts = {
     routers?: {
         [key: string]: any;
     };
+    unhandledRoutes?: any;
 };
 export declare function initApi(opts?: ApiOpts): any;
 //# sourceMappingURL=lib.d.ts.map
