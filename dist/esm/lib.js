@@ -13,15 +13,15 @@ import compression from "compression";
 import 'express-async-errors';
 import cors from "cors";
 import bodyParser from "body-parser";
-import { isEmpty, isDirectory, isFile, slashPath, PkError, subObj, } from "pk-ts-node-lib";
+import { isEmpty, dbgWrt, isDirectory, isFile, slashPath, PkError, subObj, } from "pk-ts-node-lib";
 //export type = {
 export function getReqFields(req, extraFields = []) {
     let reqFieldList = [
         'baseUrl', 'body', 'cookies', 'hostname', 'ip', 'method',
-        'originalUrl', 'params', 'path', 'protocol', 'query', { route: 'path' },
+        'originalUrl', 'params', 'path', 'protocol', 'query', { route: ['path'] },
         'secure', 'subdomains',
     ];
-    console.log('in getReqFields', { reqFieldList });
+    //console.log('in getReqFields', {reqFieldList});
     let reqFields = subObj(req, reqFieldList);
     return reqFields;
 }
@@ -174,7 +174,8 @@ export function initApi(opts = {}) {
             console.log(`Creating generic unhandled route handler`);
             handlerFunction = async (req, res) => {
                 let reqData = getReqFields(req);
-                console.error(`Unhandled Route - data:`, { reqData });
+                let fpath = dbgWrt({ reqData });
+                console.error(`Unhandled Route - data:`, { reqData, fpath });
                 res.status(404).json({ unhandledRoute: reqData });
             };
         }
@@ -184,7 +185,7 @@ export function initApi(opts = {}) {
         }
         if (handlerFunction) {
             console.log(`Thinking we have a handler function`);
-            api.all('/api*', handlerFunction);
+            api.all('/api/*', handlerFunction);
         }
         else {
             console.error(`Don't know what to do with init val unhandledRoutes:`, { unhandledRoutes });

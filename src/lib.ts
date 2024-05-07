@@ -29,9 +29,9 @@ import {
 export function getReqFields(req,extraFields:any[]=[]) {
  let reqFieldList:any[] = [ 
 'baseUrl', 'body', 'cookies', 'hostname', 'ip', 'method',
-'originalUrl', 'params', 'path', 'protocol', 'query', {route:'path'},
+'originalUrl', 'params', 'path', 'protocol', 'query', {route:['path']},
 'secure', 'subdomains', ];
-console.log('in getReqFields', {reqFieldList});
+//console.log('in getReqFields', {reqFieldList});
 let reqFields = subObj(req, reqFieldList);
 return reqFields;
 }
@@ -244,7 +244,8 @@ export  function initApi(opts: ApiOpts = {}) {
 			console.log(`Creating generic unhandled route handler`);
 			 handlerFunction = async (req, res) => {
 			let reqData = getReqFields(req);
-			console.error(`Unhandled Route - data:`,{reqData});
+			let fpath = dbgWrt({reqData});
+			console.error(`Unhandled Route - data:`,{reqData, fpath});
 			res.status(404).json({unhandledRoute:reqData});
 			};
 		} else if (typeof unhandledRoutes === 'function') {
@@ -253,7 +254,7 @@ export  function initApi(opts: ApiOpts = {}) {
 		}  
 		if (handlerFunction) {
 			console.log(`Thinking we have a handler function`);
-			api.all('/api*', handlerFunction);
+			api.all('/api/*', handlerFunction);
 		} else {
 			console.error(`Don't know what to do with init val unhandledRoutes:`,{unhandledRoutes});
 		}

@@ -25,7 +25,7 @@ api.someVal = 123;
 api.showVal = () => {
     //@ts-ignore 
     let asv = this.someVal;
-    console.log(`in api showval:`, asv);
+    //console.log(`in api showval:`, asv);
 };
 let apiProps = allProps(api);
 //dbgWrt(apiProps);
