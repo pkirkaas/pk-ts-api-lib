@@ -10,6 +10,11 @@
 import 'express-async-errors';
 import { GenObj } from "pk-ts-node-lib";
 export declare function getReqFields(req: any, extraFields?: any[]): GenObj;
+/**
+ * The LAST middleware in the API
+ * Should it be async?
+ */
+export declare function defaultErrorHandler(error: any, req: any, res: any, next: any): Promise<void>;
 export declare let port: any;
 export declare function getPort(aPort?: any): any;
 export declare let defaultRelStaticPath: string;
@@ -59,6 +64,7 @@ export type ApiOpts = {
         [key: string]: any;
     };
     unhandledRoutes?: any;
+    errorHandler?: any;
 };
 export declare function initApi(opts?: ApiOpts): any;
 //# sourceMappingURL=lib.d.ts.map

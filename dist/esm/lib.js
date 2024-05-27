@@ -25,6 +25,15 @@ export function getReqFields(req, extraFields = []) {
     let reqFields = subObj(req, reqFieldList);
     return reqFields;
 }
+/**
+ * The LAST middleware in the API
+ * Should it be async?
+ */
+export async function defaultErrorHandler(error, req, res, next) {
+    let reqDets = getReqFields(req);
+    console.error(`Default ErrorHandler Middleware`, { reqDets, error });
+    res.status(501).json({ msg: `Server error in API call`, error, reqDets });
+}
 export let port = null;
 export function getPort(aPort = null) {
     if (!port) {
@@ -93,6 +102,7 @@ export function initApi(opts = {}) {
         cookieParser: true,
         //unhandledRoutes:{api:true},
         unhandledRoutes: true,
+        errorHandler: true,
     };
     let settings = Object.assign({}, defaults, opts);
     //console.log(`In initApi - settings:`,{settings});
@@ -189,6 +199,31 @@ export function initApi(opts = {}) {
         }
         else {
             console.error(`Don't know what to do with init val unhandledRoutes:`, { unhandledRoutes });
+        }
+    }
+    let errorHandler = settings.errorHandler;
+    //errorHandler
+    if (errorHandler) { // What possible values? For now, just if true, report all unhandled routes
+        console.log("Hoping to handle unhandledRoutes");
+        let handlerFunction = null;
+        if (errorHandler === true) { // Generic Handling
+            console.log(`Using generic error handler`);
+            handlerFunction = defaultErrorHandler;
+            //let reqData = getReqFields(req);
+            //let fpath = //dbgWrt({reqData});
+            //console.error(`Unhandled Route - data:`,{reqData,});
+            //res.status(404).json({unhandledRoute:reqData});
+        }
+        else if (typeof errorHandler === 'function') { //Custom Error Handler
+            console.log(`Creating custom unhandled route handler`);
+            handlerFunction = errorHandler;
+        }
+        if (handlerFunction) {
+            console.log(`Thinking we have a error handler function`);
+            api.use(handlerFunction);
+        }
+        else {
+            console.error(`Don't know what to do with init val unhandledErrors:`, { errorHandler });
         }
     }
     api.listenPort = async function (aport = null) {

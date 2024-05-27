@@ -36,6 +36,17 @@ let reqFields = subObj(req, reqFieldList);
 return reqFields;
 }
 
+/**
+ * The LAST middleware in the API
+ * Should it be async?
+ */
+export async function defaultErrorHandler(error, req, res, next) {
+	let reqDets = getReqFields(req);
+	console.error(`Default ErrorHandler Middleware`,{reqDets, error});
+	res.status(501).json({msg:`Server error in API call`, error, reqDets});
+
+
+}
 
 export let port: any = null;
 
@@ -130,6 +141,8 @@ export type ApiOpts = {
 	static?:string, //If present, has to absolute path where the FE is found
 	routers?: {[key: string]:any}, //Object keyed with string pathSegment to the routers
 	unhandledRoutes?:any, //If true, try to catch & process unandled routes - true, false or function, or oject keyed path:opt
+	errorHandler?:any, //If true, try to catch & process unandled errors - true, false or function, or oject keyed path:opt
+
 };
 export  function initApi(opts: ApiOpts = {}) {
 	let defaults:ApiOpts = {
@@ -143,6 +156,7 @@ export  function initApi(opts: ApiOpts = {}) {
 		cookieParser: true,
 		//unhandledRoutes:{api:true},
 		unhandledRoutes:true,
+		errorHandler:true,
 	};
 
 	let settings:ApiOpts = Object.assign({}, defaults, opts);
@@ -257,6 +271,32 @@ export  function initApi(opts: ApiOpts = {}) {
 			api.all('/api/*', handlerFunction);
 		} else {
 			console.error(`Don't know what to do with init val unhandledRoutes:`,{unhandledRoutes});
+		}
+	}
+	 
+
+	let errorHandler = settings.errorHandler;
+//errorHandler
+	if (errorHandler) { // What possible values? For now, just if true, report all unhandled routes
+		console.log("Hoping to handle unhandledRoutes");
+		let handlerFunction:any = null;
+		if (errorHandler === true) { // Generic Handling
+			console.log(`Using generic error handler`);
+			 handlerFunction = defaultErrorHandler;
+			//let reqData = getReqFields(req);
+			//let fpath = //dbgWrt({reqData});
+			//console.error(`Unhandled Route - data:`,{reqData,});
+			//res.status(404).json({unhandledRoute:reqData});
+			
+		} else if (typeof errorHandler === 'function') { //Custom Error Handler
+			console.log(`Creating custom unhandled route handler`);
+			handlerFunction = errorHandler;
+		}  
+		if (handlerFunction) {
+			console.log(`Thinking we have a error handler function`);
+			api.use(handlerFunction);
+		} else {
+			console.error(`Don't know what to do with init val unhandledErrors:`,{errorHandler});
 		}
 	}
 	 
