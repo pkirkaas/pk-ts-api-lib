@@ -67,10 +67,10 @@ export function getApi(anApi = null) {
     return api;
 }
 /**
- * Turns out to be difficult, since has to be absolute path & we don't easily knoow where we are...
+ * Turns out to be difficult, since has to be absolute path & we don't easily know where we are...
  * So we have to go up the tree....
  * @param dirname - the name of the directory where the server script lives
- * @param apath - optional relpath, else defaunt
+ * @param apath - optional relpath, else default
  */
 //export function getStaticPath(apath:any = null) {
 export function getStaticPath(dirname, apath) {

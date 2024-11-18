@@ -26,10 +26,10 @@ export declare let api: any;
  */
 export declare function getApi(anApi?: any): any;
 /**
- * Turns out to be difficult, since has to be absolute path & we don't easily knoow where we are...
+ * Turns out to be difficult, since has to be absolute path & we don't easily know where we are...
  * So we have to go up the tree....
  * @param dirname - the name of the directory where the server script lives
- * @param apath - optional relpath, else defaunt
+ * @param apath - optional relpath, else default
  */
 export declare function getStaticPath(dirname: string, apath?: string): string;
 /**
@@ -39,7 +39,7 @@ export declare function getStaticPath(dirname: string, apath?: string): string;
  *   cors: boolean (true),
  *   port: empty|number (defaults to process.env.PORT or 3000),
  *   compression: boolean (true),
- *   killPort : booldean (true), // For dev - kill if api already running on port FOR DEV
+ *   killPort : boolean (true), // For dev - kill if api already running on port FOR DEV
  *   urlencoded: boolean (true) - if true, use extended
  *   static: boolean (true) | string (relative path or absolute path),
  *   apiBase : string (defaults to 'api'),
