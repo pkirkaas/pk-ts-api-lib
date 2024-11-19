@@ -37,6 +37,7 @@
     "cors": "*",
     "evp_bytestokey": "*",
     "express": "*",
+    "express-session": "*",
     "express-async-errors": "*",
     "express-list-endpoints": "^6.0.0",
     "jsonwebtoken": "*",
