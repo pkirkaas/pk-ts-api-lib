@@ -8,8 +8,7 @@
  * sessions, session implementation, auth, etc.
  */
 import 'express-async-errors';
-import { GenObj } from "pk-ts-node-lib";
-export declare function getReqFields(req: any, extraFields?: any[]): GenObj;
+export declare function getReqFields(req: any, extraFields?: any[]): import("pk-ts-node-lib").GenericObject;
 /**
  * The LAST middleware in the API
  * Should it be async?
