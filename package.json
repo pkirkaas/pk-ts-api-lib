@@ -36,7 +36,7 @@
     "cookie-parser": "*",
     "cors": "*",
     "evp_bytestokey": "*",
-    "express": "*",
+    "express": "4.21.2",
     "express-session": "*",
     "express-async-errors": "*",
     "express-list-endpoints": "^6.0.0",
