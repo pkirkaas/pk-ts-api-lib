@@ -29,7 +29,7 @@
     "null": "nothing"
   },
   "dependencies": {
-    "bcrypt": "*",
+    "bcrypt": "6.0.0",
     "body-parser": "*",
     "compression": "*",
     "connect-sqlite3": "^0.9.13",
