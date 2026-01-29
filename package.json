@@ -29,7 +29,7 @@
     "null": "nothing"
   },
   "dependencies": {
-    "bcrypt": "*",
+    "bcrypt": "6.0.0",
     "body-parser": "*",
     "compression": "*",
     "connect-sqlite3": "^0.9.13",
@@ -42,7 +42,7 @@
     "express-list-endpoints": "^6.0.0",
     "jsonwebtoken": "*",
     "kill-port": "*",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "pk-ts-node-lib": "github:pkirkaas/pk-ts-node-lib#working",
     "reflect-metadata": "*",
     "rxjs": "*",
